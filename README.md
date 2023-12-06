@@ -6,7 +6,7 @@ Dùng làm đồ án cuối kỳ môn **Internet và Công nghệ Web** - *(E104
 
 ## Yêu Cầu
 - Sử dụng IDE: **Visual Studio** *(Nên tải phiên bản 2022 để đảm bảo cài đặt .NET 7.0)*
-- Tải file **MSSQL.sql** trong folder data
+- Tải file **MSSQL.sql** trong folder data tại client: https://github.com/hungnh219/FurnitureWebsite
 
 ## Hướng dẫn
 ### Add dependencies
