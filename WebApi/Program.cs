@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using WebApi.Entities;
 using WebApi.Entities_FurnitureWebsite;
 
 var builder = WebApplication.CreateBuilder(args);

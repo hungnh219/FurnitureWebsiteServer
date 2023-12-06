@@ -78,7 +78,7 @@ namespace WebApi.Controllers
                                 //.ToList();
             var query = _context.Users
                                 .Where(u => u.Id.ToString() == id)
-                                .Select(u => new { u.FirstName, u.LastName, u.Mail, u.Phone, u.Address, u.RegDate })
+                                .Select(u => new { u.Id, u.UserName, u.FirstName, u.LastName, u.Mail, u.Phone, u.Address, u.RegDate, u.BirthYear })
                                 .ToList();
 
             return Ok(query);
@@ -145,6 +145,104 @@ namespace WebApi.Controllers
                 // Đăng nhập thất bại
                 return BadRequest(new { Message = "Invalid username or password" });
             }
+        }
+
+        // update profile
+        public class UpdateUserModel
+        {
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Mail { get; set; }
+            public string Phone { get; set; }
+            public string Address { get; set; }
+            public DateTime RegDate { get; set; }
+        }
+
+        [HttpPut("UpdateUser/{id}")]
+        public IActionResult UpdateUser(int id, [FromForm] UpdateUserModel updatedUserData)
+        {
+            if (updatedUserData == null)
+            {
+                return BadRequest("Invalid data");
+            }
+
+            var existingUser = _context.Users.FirstOrDefault(u => u.Id == id);
+
+            if (existingUser == null)
+            {
+                return NotFound("User not found");
+            }
+
+            existingUser.FirstName = updatedUserData.FirstName;
+            existingUser.LastName = updatedUserData.LastName;
+            existingUser.Phone = updatedUserData.Phone;
+            existingUser.Mail = updatedUserData.Mail;
+            existingUser.Address = updatedUserData.Address;
+            existingUser.RegDate = updatedUserData.RegDate;
+
+            _context.SaveChanges();
+
+            return Ok(existingUser);
+        }
+
+        // update password
+        public class UpdatePasswordModel
+        {
+            public string UserName { get; set; }
+            public string NewPassword { get; set; }
+        }
+        [HttpPut("UpdatePassword")]
+        public IActionResult UpdatePassword([FromBody] UpdatePasswordModel updatePasswordModel)
+        {
+            if (updatePasswordModel == null || !ModelState.IsValid)
+            {
+                return BadRequest("Invalid data");
+            }
+
+            var existingUser = _context.Users.FirstOrDefault(u => u.UserName == updatePasswordModel.UserName);
+
+            if (existingUser == null)
+            {
+                return NotFound("User not found");
+            }
+
+            existingUser.PassWord = updatePasswordModel.NewPassword;
+
+            _context.SaveChanges();
+
+            return Ok("Password updated successfully");
+        }
+
+        //create account
+        public class CreateUserModel
+        {
+            public string UserName { get; set; }
+            public string Password { get; set; }
+        }
+        [HttpPost("CreateAccount")]
+        public IActionResult CreateAccount(CreateUserModel userModel)
+        {
+            if (userModel == null || !ModelState.IsValid)
+            {
+                return BadRequest("Invalid data");
+            }
+
+            var existingUser = _context.Users.FirstOrDefault(u => u.UserName == userModel.UserName);
+            if (existingUser != null)
+            {
+                return Conflict("User already exists");
+            }
+
+            var newUser = new User
+            {
+                UserName = userModel.UserName,
+                PassWord = userModel.Password,
+            };
+
+            _context.Users.Add(newUser);
+            _context.SaveChanges();
+
+            return Ok("Account created successfully");
         }
 
     }
